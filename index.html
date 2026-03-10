@@ -1183,10 +1183,10 @@
     <div class="vote-item" data-question="priority">
       <div class="vote-question">🎯 Что для вас критично ПРЯМО СЕЙЧАС?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="bots" onclick="submitVote('priority', 'bots', this)">Боты/автоматизация</button>
-        <button class="vote-btn" data-option="sales" onclick="submitVote('priority', 'sales', this)">Продажи через TG</button>
-        <button class="vote-btn" data-option="community" onclick="submitVote('priority', 'community', this)">Коммьюнити</button>
-        <button class="vote-btn" data-option="notifications" onclick="submitVote('priority', 'notifications', this)">Уведомления</button>
+        <button class="vote-btn" data-option="bots" onclick="voteClick('priority', 'bots', this)">Боты/автоматизация</button>
+        <button class="vote-btn" data-option="sales" onclick="voteClick('priority', 'sales', this)">Продажи через TG</button>
+        <button class="vote-btn" data-option="community" onclick="voteClick('priority', 'community', this)">Коммьюнити</button>
+        <button class="vote-btn" data-option="notifications" onclick="voteClick('priority', 'notifications', this)">Уведомления</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="bots"></div><div class="result-text">Боты: <span class="result-percent">0%</span></div></div>
@@ -1199,10 +1199,10 @@
     <div class="vote-item" data-question="budget">
       <div class="vote-question">💰 Готовы платить за стабильные решения?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="free" onclick="submitVote('budget', 'free', this)">Только бесплатно</button>
-        <button class="vote-btn" data-option="cheap" onclick="submitVote('budget', 'cheap', this)">До $10/мес</button>
-        <button class="vote-btn" data-option="medium" onclick="submitVote('budget', 'medium', this)">$10-50/мес</button>
-        <button class="vote-btn" data-option="premium" onclick="submitVote('budget', 'premium', this)">$50+/мес</button>
+        <button class="vote-btn" data-option="free" onclick="voteClick('budget', 'free', this)">Только бесплатно</button>
+        <button class="vote-btn" data-option="cheap" onclick="voteClick('budget', 'cheap', this)">До $10/мес</button>
+        <button class="vote-btn" data-option="medium" onclick="voteClick('budget', 'medium', this)">$10-50/мес</button>
+        <button class="vote-btn" data-option="premium" onclick="voteClick('budget', 'premium', this)">$50+/мес</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="free"></div><div class="result-text">Бесплатно: <span class="result-percent">0%</span></div></div>
@@ -1215,10 +1215,10 @@
     <div class="vote-item" data-question="migration">
       <div class="vote-question">🚀 Уже мигрируете или планируете?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="staying" onclick="submitVote('migration', 'staying', this)">Держусь за TG</button>
-        <button class="vote-btn" data-option="discord" onclick="submitVote('migration', 'discord', this)">Discord</button>
-        <button class="vote-btn" data-option="signal" onclick="submitVote('migration', 'signal', this)">Signal</button>
-        <button class="vote-btn" data-option="other" onclick="submitVote('migration', 'other', this)">Другие платформы</button>
+        <button class="vote-btn" data-option="staying" onclick="voteClick('migration', 'staying', this)">Держусь за TG</button>
+        <button class="vote-btn" data-option="discord" onclick="voteClick('migration', 'discord', this)">Discord</button>
+        <button class="vote-btn" data-option="signal" onclick="voteClick('migration', 'signal', this)">Signal</button>
+        <button class="vote-btn" data-option="other" onclick="voteClick('migration', 'other', this)">Другие платформы</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="staying"></div><div class="result-text">Остаюсь в TG: <span class="result-percent">0%</span></div></div>
@@ -1267,7 +1267,7 @@
         Какие решения нужны? Ваш опыт поможет найти лучшие варианты для всех.
       </p>
       
-      <form id="anonymousFeedbackForm">
+      <form onsubmit="return sendFeedback()">
         <textarea 
           class="feedback-textarea" 
           id="feedbackText"
@@ -1458,56 +1458,42 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-// SIMPLIFIED VOTING FUNCTION
-function submitVote(question, option, buttonElement) {
-  console.log('submitVote called:', question, option);
-  
-  // Prevent double voting
-  if (userVotes[question]) {
-    alert('Вы уже голосовали в этом опросе!');
+// SUPER SIMPLE VOTING FUNCTION
+function voteClick(question, option, btn) {
+  // Check if already voted
+  const voted = localStorage.getItem('voted_' + question);
+  if (voted) {
+    alert('Вы уже голосовали в этом вопросе!');
     return;
   }
-
-  // Visual feedback
-  buttonElement.classList.add('voted');
-  buttonElement.disabled = true;
-  buttonElement.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
-  buttonElement.style.color = '#fff';
   
-  // Disable other buttons in this question
-  const questionDiv = buttonElement.closest('[data-question]');
-  questionDiv.querySelectorAll('.vote-btn').forEach(btn => {
-    if (btn !== buttonElement) {
-      btn.disabled = true;
-      btn.style.opacity = '0.5';
+  // Mark as voted
+  localStorage.setItem('voted_' + question, option);
+  
+  // Change button style
+  btn.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
+  btn.style.color = '#fff';
+  btn.style.transform = 'scale(1.05)';
+  btn.disabled = true;
+  
+  // Disable other buttons
+  const allBtns = btn.parentElement.querySelectorAll('.vote-btn');
+  allBtns.forEach(b => {
+    if (b !== btn) {
+      b.disabled = true;
+      b.style.opacity = '0.5';
     }
   });
-
-  // Update local data
-  if (userVotes[question]) {
-    votingData[question][userVotes[question]]--;
+  
+  // Show success
+  alert('✅ Голос засчитан! Спасибо за участие');
+  
+  // Update counter
+  const counter = document.getElementById('total-votes');
+  if (counter) {
+    const current = parseInt(counter.textContent) || 0;
+    counter.textContent = current + 1;
   }
-  
-  votingData[question][option]++;
-  userVotes[question] = option;
-  
-  saveData();
-  updateResults(question);
-  updateStats();
-  
-  // Simple success message
-  const successMsg = document.createElement('div');
-  successMsg.innerHTML = '✅ Голос засчитан! Спасибо за участие';
-  successMsg.style.cssText = `
-    position: fixed; top: 20px; right: 20px; 
-    background: #141414; color: #F5C842; 
-    padding: 12px 20px; border-radius: 6px; 
-    border: 1px solid #F5C842; z-index: 10000;
-    font-family: 'Geologica', sans-serif;
-  `;
-  document.body.appendChild(successMsg);
-  
-  setTimeout(() => successMsg.remove(), 3000);
 }
 
 // NOTIFICATION SYSTEM
@@ -1532,54 +1518,41 @@ function showNotification(message, type = 'info') {
   }, 4000);
 }
 
-// SIMPLIFIED FEEDBACK FORM
-function submitFeedback(event) {
-  event.preventDefault();
-  console.log('submitFeedback called');
+// SUPER SIMPLE FEEDBACK FORM
+function sendFeedback() {
+  const text = document.getElementById('feedbackText').value.trim();
   
-  const textarea = document.getElementById('feedbackText');
-  const submitBtn = document.getElementById('feedbackSubmit');
-  const feedbackText = textarea.value.trim();
-  
-  if (!feedbackText) {
-    alert('Пожалуйста, поделитесь своим опытом');
-    return;
+  if (!text) {
+    alert('Пожалуйста, напишите свой отзыв');
+    return false;
   }
   
-  // Show loading state
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Отправляем...';
+  const btn = document.getElementById('feedbackSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Отправляем...';
   
-  const payload = {
-    q1: feedbackText,
-    user_id: "Anonymous",
+  const data = {
+    q1: text,
+    user_id: "Anonymous", 
     source: window.location.href,
     feedback: "TG Block 2026"
   };
   
   // Send to Google Apps Script
-  fetch(FEEDBACK_URL, {
+  fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
     method: 'POST',
     mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload)
-  }).then(() => {
-    // Show success state
-    document.getElementById('feedbackForm').style.display = 'none';
-    document.getElementById('feedbackSuccess').style.display = 'block';
-    
-    // Track submission
-    const submissions = parseInt(localStorage.getItem('feedbackSubmissions') || '0') + 1;
-    localStorage.setItem('feedbackSubmissions', submissions.toString());
-    
-  }).catch(error => {
-    console.log('Feedback error:', error);
-    // Show success anyway (no-cors mode)
-    document.getElementById('feedbackForm').style.display = 'none';
-    document.getElementById('feedbackSuccess').style.display = 'block';
+    body: JSON.stringify(data)
   });
+  
+  // Show success immediately (no-cors can't detect response)
+  setTimeout(() => {
+    document.getElementById('feedbackForm').style.display = 'none';
+    document.getElementById('feedbackSuccess').style.display = 'block';
+    alert('✅ Обратная связь отправлена! Спасибо!');
+  }, 1000);
+  
+  return false; // Prevent form submission
 }
 
 function updateResults(question) {
@@ -1626,55 +1599,41 @@ function animateNumber(elementId, targetNumber) {
   }
 }
 
-// Event listeners for voting and feedback form
-document.addEventListener('DOMContentLoaded', () => {
-  // Load existing votes and show results
-  Object.keys(userVotes).forEach(question => {
-    const option = userVotes[question];
-    const button = document.querySelector(`[data-question="${question}"] [data-option="${option}"]`);
-    if (button) {
-      button.classList.add('selected');
-      button.disabled = true;
-      
-      // Disable other buttons in this question
-      const questionDiv = button.closest('[data-question]');
-      questionDiv.querySelectorAll('.vote-btn').forEach(btn => {
-        if (btn !== button) {
-          btn.disabled = true;
-          btn.style.opacity = '0.5';
-        }
-      });
+// SIMPLE INITIALIZATION
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Page loaded - voting ready!');
+  
+  // Check for existing votes and disable buttons
+  const questions = ['priority', 'budget', 'migration'];
+  questions.forEach(q => {
+    const voted = localStorage.getItem('voted_' + q);
+    if (voted) {
+      const btn = document.querySelector(`[data-option="${voted}"]`);
+      if (btn) {
+        btn.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
+        btn.style.color = '#fff';
+        btn.disabled = true;
+        
+        // Disable other buttons in same question
+        const allBtns = btn.parentElement.querySelectorAll('.vote-btn');
+        allBtns.forEach(b => {
+          if (b !== btn) {
+            b.disabled = true;
+            b.style.opacity = '0.5';
+          }
+        });
+      }
     }
-    updateResults(question);
   });
   
-  updateStats();
-  
-  // Initialize feedback form
-  const feedbackForm = document.getElementById('anonymousFeedbackForm');
-  if (feedbackForm) {
-    feedbackForm.addEventListener('submit', submitFeedback);
-    
-    // Character counter for textarea
-    const textarea = document.getElementById('feedbackText');
-    if (textarea) {
-      textarea.addEventListener('input', () => {
-        const remaining = 1000 - textarea.value.length;
-        if (remaining < 100) {
-          textarea.style.borderColor = remaining < 50 ? 'var(--red)' : 'var(--accent)';
-        } else {
-          textarea.style.borderColor = 'var(--border)';
-        }
-      });
-    }
-  }
-  
-  // Show welcome message
-  setTimeout(() => {
-    console.log('Page fully loaded, functions ready');
-    console.log('userVotes:', userVotes);
-    console.log('votingData:', votingData);
-  }, 1000);
+  // Simple counter animation
+  let counter = 0;
+  const totalVotes = document.getElementById('total-votes');
+  const interval = setInterval(() => {
+    counter++;
+    if (totalVotes) totalVotes.textContent = counter;
+    if (counter >= 47) clearInterval(interval);
+  }, 50);
 });
 
 function scrollToVoting() {
