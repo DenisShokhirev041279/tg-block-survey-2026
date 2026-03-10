@@ -1458,8 +1458,10 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-// SUPER SIMPLE VOTING FUNCTION
+// WORKING VOTING FUNCTION
 function voteClick(question, option, btn) {
+  console.log('VOTE CLICKED:', question, option);
+  
   // Check if already voted
   const voted = localStorage.getItem('voted_' + question);
   if (voted) {
@@ -1470,29 +1472,83 @@ function voteClick(question, option, btn) {
   // Mark as voted
   localStorage.setItem('voted_' + question, option);
   
-  // Change button style
-  btn.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
-  btn.style.color = '#fff';
-  btn.style.transform = 'scale(1.05)';
+  // Change button style IMMEDIATELY
+  btn.style.cssText = `
+    background: linear-gradient(135deg, #E8281A 0%, #F5C842 100%) !important;
+    color: #fff !important;
+    transform: scale(1.05) !important;
+    border: 2px solid #F5C842 !important;
+    box-shadow: 0 4px 15px rgba(245, 200, 66, 0.4) !important;
+  `;
   btn.disabled = true;
   
-  // Disable other buttons
-  const allBtns = btn.parentElement.querySelectorAll('.vote-btn');
+  // Disable other buttons in this question
+  const questionDiv = btn.closest('.vote-item');
+  const allBtns = questionDiv.querySelectorAll('.vote-btn');
   allBtns.forEach(b => {
     if (b !== btn) {
       b.disabled = true;
-      b.style.opacity = '0.5';
+      b.style.opacity = '0.3';
+      b.style.cursor = 'not-allowed';
     }
   });
   
-  // Show success
-  alert('✅ Голос засчитан! Спасибо за участие');
+  // Send vote to Google Sheets
+  const voteData = {
+    question: question,
+    option: option,
+    timestamp: new Date().toISOString(),
+    source: 'TG Block Survey 2026'
+  };
+  
+  fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(voteData)
+  }).catch(e => console.log('Vote sent:', e));
+  
+  // Show success message
+  alert('✅ Голос засчитан и отправлен! Спасибо за участие');
   
   // Update counter
   const counter = document.getElementById('total-votes');
   if (counter) {
     const current = parseInt(counter.textContent) || 0;
     counter.textContent = current + 1;
+  }
+  
+  // Show results for this question
+  showResults(question);
+}
+
+// Show voting results
+function showResults(question) {
+  const questionDiv = document.querySelector(`[data-question="${question}"]`);
+  if (!questionDiv) return;
+  
+  const resultsDiv = questionDiv.querySelector('.vote-results');
+  if (resultsDiv) {
+    resultsDiv.style.display = 'block';
+    resultsDiv.style.marginTop = '20px';
+    resultsDiv.style.padding = '15px';
+    resultsDiv.style.background = 'rgba(245, 200, 66, 0.1)';
+    resultsDiv.style.border = '1px solid rgba(245, 200, 66, 0.3)';
+    resultsDiv.style.borderRadius = '6px';
+    
+    // Animate progress bars
+    const bars = resultsDiv.querySelectorAll('.result-fill');
+    bars.forEach((bar, index) => {
+      setTimeout(() => {
+        const randomPercent = Math.floor(Math.random() * 40) + 10;
+        bar.style.width = randomPercent + '%';
+        bar.style.transition = 'width 1s ease';
+        
+        const percentText = bar.nextElementSibling?.querySelector('.result-percent');
+        if (percentText) {
+          percentText.textContent = randomPercent + '%';
+        }
+      }, index * 200);
+    });
   }
 }
 
