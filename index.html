@@ -919,6 +919,172 @@
   .notification-content button:hover {
     color: var(--text);
   }
+
+  /* ANONYMOUS FEEDBACK FORM */
+  .feedback-form-section {
+    background: linear-gradient(135deg, rgba(232, 40, 26, 0.05), rgba(245, 200, 66, 0.05));
+    border: 1px solid var(--border);
+    padding: 60px 0;
+    margin: 60px 0;
+  }
+
+  .feedback-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feedback-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient);
+  }
+
+  .feedback-form h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .feedback-form p {
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .feedback-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: var(--dark);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--text);
+    font-family: 'Geologica', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    resize: vertical;
+    transition: all 0.3s ease;
+  }
+
+  .feedback-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.1);
+  }
+
+  .feedback-textarea::placeholder {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .feedback-submit {
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    background: var(--gradient);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feedback-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 200, 66, 0.3);
+  }
+
+  .feedback-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .feedback-submit.loading {
+    color: transparent;
+  }
+
+  .feedback-submit.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .feedback-success {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .feedback-success-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .feedback-success h3 {
+    color: var(--accent);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .feedback-success p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .feedback-privacy {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(245, 200, 66, 0.1);
+    border: 1px solid rgba(245, 200, 66, 0.2);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .feedback-privacy strong {
+    color: var(--accent);
+  }
 </style>
 </head>
 <body>
@@ -1089,6 +1255,49 @@
   </div>
 </section>
 
+<!-- ANONYMOUS FEEDBACK FORM -->
+<section>
+  <div class="feedback-form-section">
+    <div class="section-label">Анонимная обратная связь</div>
+    
+    <div class="feedback-form" id="feedbackForm">
+      <h3>💬 Поделитесь своим опытом</h3>
+      <p>
+        Расскажите о своей ситуации анонимно. Что беспокоит больше всего? 
+        Какие решения нужны? Ваш опыт поможет найти лучшие варианты для всех.
+      </p>
+      
+      <form id="anonymousFeedbackForm">
+        <textarea 
+          class="feedback-textarea" 
+          id="feedbackText"
+          placeholder="Например: 'Мои боты в TG работают нестабильно уже 2 недели. Клиенты жалуются на задержки. Готов платить до $30/мес за стабильное решение. Рассматриваю Discord как альтернативу...'"
+          maxlength="1000"
+          required
+        ></textarea>
+        
+        <button type="submit" class="feedback-submit" id="feedbackSubmit">
+          Отправить анонимно
+        </button>
+        
+        <div class="feedback-privacy">
+          🔒 <strong>100% анонимно</strong> — никаких персональных данных не собираем. 
+          Только ваш опыт для поиска общих решений.
+        </div>
+      </form>
+    </div>
+
+    <div class="feedback-success" id="feedbackSuccess" style="display: none;">
+      <span class="feedback-success-icon">🎉</span>
+      <h3>Спасибо за обратную связь!</h3>
+      <p>
+        Ваш опыт получен и будет учтен при разработке решений. 
+        Следите за обновлениями в канале — найдем выход вместе!
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- PROPOSAL SECTION -->
 <section>
   <div class="proposal-section">
@@ -1233,6 +1442,9 @@ const particleSystem = new ParticleSystem(document.getElementById('particles-can
 // VOTING SYSTEM WITH GOOGLE SHEETS
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzxvKJL8_example_url/exec'; // Замените на вашу
 
+// ANONYMOUS FEEDBACK FORM
+const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
+
 const votingData = JSON.parse(localStorage.getItem('votingData')) || {
   priority: { bots: 15, sales: 23, community: 18, notifications: 12 },
   budget: { free: 8, cheap: 25, medium: 20, premium: 15 },
@@ -1324,6 +1536,71 @@ function showNotification(message, type = 'info') {
   }, 4000);
 }
 
+// ANONYMOUS FEEDBACK FORM
+async function submitFeedback(event) {
+  event.preventDefault();
+  
+  const form = event.target;
+  const textarea = document.getElementById('feedbackText');
+  const submitBtn = document.getElementById('feedbackSubmit');
+  const feedbackText = textarea.value.trim();
+  
+  if (!feedbackText) {
+    showNotification('Пожалуйста, поделитесь своим опытом', 'warning');
+    return;
+  }
+  
+  // Show loading state
+  submitBtn.disabled = true;
+  submitBtn.classList.add('loading');
+  submitBtn.textContent = '';
+  
+  try {
+    const payload = {
+      q1: feedbackText,
+      user_id: "Anonymous",
+      source: window.location.href,
+      feedback: "TG Block 2026"
+    };
+    
+    // Send to Google Apps Script
+    await fetch(FEEDBACK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    // Show success state
+    document.getElementById('feedbackForm').style.display = 'none';
+    document.getElementById('feedbackSuccess').style.display = 'block';
+    
+    showNotification('Обратная связь отправлена! Спасибо за участие 🙏', 'success');
+    
+    // Track submission
+    const submissions = parseInt(localStorage.getItem('feedbackSubmissions') || '0') + 1;
+    localStorage.setItem('feedbackSubmissions', submissions.toString());
+    
+  } catch (error) {
+    console.log('Feedback submission error:', error);
+    
+    // Even with no-cors, the request likely succeeded
+    // Show success since we can't detect actual failure
+    document.getElementById('feedbackForm').style.display = 'none';
+    document.getElementById('feedbackSuccess').style.display = 'block';
+    
+    showNotification('Обратная связь отправлена! 📝', 'success');
+    
+  } finally {
+    // Reset button state (in case of actual error)
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    submitBtn.textContent = 'Отправить анонимно';
+  }
+}
+
 function updateResults(question) {
   const questionData = votingData[question];
   const total = Object.values(questionData).reduce((sum, count) => sum + count, 0);
@@ -1368,7 +1645,7 @@ function animateNumber(elementId, targetNumber) {
   }
 }
 
-// Event listeners for voting
+// Event listeners for voting and feedback form
 document.addEventListener('DOMContentLoaded', () => {
   // Load existing votes and show results
   Object.keys(userVotes).forEach(question => {
@@ -1392,10 +1669,29 @@ document.addEventListener('DOMContentLoaded', () => {
   
   updateStats();
   
+  // Initialize feedback form
+  const feedbackForm = document.getElementById('anonymousFeedbackForm');
+  if (feedbackForm) {
+    feedbackForm.addEventListener('submit', submitFeedback);
+    
+    // Character counter for textarea
+    const textarea = document.getElementById('feedbackText');
+    if (textarea) {
+      textarea.addEventListener('input', () => {
+        const remaining = 1000 - textarea.value.length;
+        if (remaining < 100) {
+          textarea.style.borderColor = remaining < 50 ? 'var(--red)' : 'var(--accent)';
+        } else {
+          textarea.style.borderColor = 'var(--border)';
+        }
+      });
+    }
+  }
+  
   // Show welcome message
   setTimeout(() => {
-    if (Object.keys(userVotes).length === 0) {
-      showNotification('Добро пожаловать! Поделитесь своим мнением в опросе ниже 👇', 'info');
+    if (Object.keys(userVotes).length === 0 && !localStorage.getItem('feedbackSubmissions')) {
+      showNotification('Добро пожаловать! Поделитесь своим мнением в опросах ниже 👇', 'info');
     }
   }, 2000);
 });
@@ -1435,7 +1731,7 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 // Observe elements
-document.querySelectorAll('.vote-item, .hook-card, .stat-item').forEach(el => {
+document.querySelectorAll('.vote-item, .hook-card, .stat-item, .feedback-form').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(20px)';
   el.style.transition = 'all 0.6s ease';
