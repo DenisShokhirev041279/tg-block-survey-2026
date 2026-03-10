@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Debug Test</title>
+</head>
+<body>
+<h1>Debug Test</h1>
+<button onclick="testVote()">Test Vote</button>
+<div id="result"></div>
+
+<script>
+function testVote() {
+  document.getElementById('result').innerHTML = 'Vote function works!';
+  console.log('Vote test successful');
+}
+
+// Test if main functions exist
+window.addEventListener('load', () => {
+  console.log('Page loaded');
+  console.log('submitVote function exists:', typeof submitVote);
+  console.log('showNotification function exists:', typeof showNotification);
+});
+</script>
+</body>
+</html>

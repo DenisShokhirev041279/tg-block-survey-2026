@@ -1458,17 +1458,21 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-// MAIN VOTING FUNCTION
-async function submitVote(question, option, buttonElement) {
+// SIMPLIFIED VOTING FUNCTION
+function submitVote(question, option, buttonElement) {
+  console.log('submitVote called:', question, option);
+  
   // Prevent double voting
   if (userVotes[question]) {
-    showNotification('Вы уже голосовали в этом опросе!', 'warning');
+    alert('Вы уже голосовали в этом опросе!');
     return;
   }
 
   // Visual feedback
   buttonElement.classList.add('voted');
   buttonElement.disabled = true;
+  buttonElement.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
+  buttonElement.style.color = '#fff';
   
   // Disable other buttons in this question
   const questionDiv = buttonElement.closest('[data-question]');
@@ -1479,39 +1483,31 @@ async function submitVote(question, option, buttonElement) {
     }
   });
 
-  try {
-    // Send to Google Sheets (optional - comment out if no sheets)
-    /*
-    await fetch(SHEET_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question: question,
-        option: option,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent.substring(0, 100)
-      })
-    });
-    */
-
-    // Update local data
-    if (userVotes[question]) {
-      votingData[question][userVotes[question]]--;
-    }
-    
-    votingData[question][option]++;
-    userVotes[question] = option;
-    
-    saveData();
-    updateResults(question);
-    updateStats();
-    
-    showNotification('Голос засчитан! Спасибо за участие 🎯', 'success');
-    
-  } catch (error) {
-    console.log('Voting saved locally:', error);
-    showNotification('Голос засчитан локально ✅', 'success');
+  // Update local data
+  if (userVotes[question]) {
+    votingData[question][userVotes[question]]--;
   }
+  
+  votingData[question][option]++;
+  userVotes[question] = option;
+  
+  saveData();
+  updateResults(question);
+  updateStats();
+  
+  // Simple success message
+  const successMsg = document.createElement('div');
+  successMsg.innerHTML = '✅ Голос засчитан! Спасибо за участие';
+  successMsg.style.cssText = `
+    position: fixed; top: 20px; right: 20px; 
+    background: #141414; color: #F5C842; 
+    padding: 12px 20px; border-radius: 6px; 
+    border: 1px solid #F5C842; z-index: 10000;
+    font-family: 'Geologica', sans-serif;
+  `;
+  document.body.appendChild(successMsg);
+  
+  setTimeout(() => successMsg.remove(), 3000);
 }
 
 // NOTIFICATION SYSTEM
@@ -1536,69 +1532,54 @@ function showNotification(message, type = 'info') {
   }, 4000);
 }
 
-// ANONYMOUS FEEDBACK FORM
-async function submitFeedback(event) {
+// SIMPLIFIED FEEDBACK FORM
+function submitFeedback(event) {
   event.preventDefault();
+  console.log('submitFeedback called');
   
-  const form = event.target;
   const textarea = document.getElementById('feedbackText');
   const submitBtn = document.getElementById('feedbackSubmit');
   const feedbackText = textarea.value.trim();
   
   if (!feedbackText) {
-    showNotification('Пожалуйста, поделитесь своим опытом', 'warning');
+    alert('Пожалуйста, поделитесь своим опытом');
     return;
   }
   
   // Show loading state
   submitBtn.disabled = true;
-  submitBtn.classList.add('loading');
-  submitBtn.textContent = '';
+  submitBtn.textContent = 'Отправляем...';
   
-  try {
-    const payload = {
-      q1: feedbackText,
-      user_id: "Anonymous",
-      source: window.location.href,
-      feedback: "TG Block 2026"
-    };
-    
-    // Send to Google Apps Script
-    await fetch(FEEDBACK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
-    
+  const payload = {
+    q1: feedbackText,
+    user_id: "Anonymous",
+    source: window.location.href,
+    feedback: "TG Block 2026"
+  };
+  
+  // Send to Google Apps Script
+  fetch(FEEDBACK_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload)
+  }).then(() => {
     // Show success state
     document.getElementById('feedbackForm').style.display = 'none';
     document.getElementById('feedbackSuccess').style.display = 'block';
-    
-    showNotification('Обратная связь отправлена! Спасибо за участие 🙏', 'success');
     
     // Track submission
     const submissions = parseInt(localStorage.getItem('feedbackSubmissions') || '0') + 1;
     localStorage.setItem('feedbackSubmissions', submissions.toString());
     
-  } catch (error) {
-    console.log('Feedback submission error:', error);
-    
-    // Even with no-cors, the request likely succeeded
-    // Show success since we can't detect actual failure
+  }).catch(error => {
+    console.log('Feedback error:', error);
+    // Show success anyway (no-cors mode)
     document.getElementById('feedbackForm').style.display = 'none';
     document.getElementById('feedbackSuccess').style.display = 'block';
-    
-    showNotification('Обратная связь отправлена! 📝', 'success');
-    
-  } finally {
-    // Reset button state (in case of actual error)
-    submitBtn.disabled = false;
-    submitBtn.classList.remove('loading');
-    submitBtn.textContent = 'Отправить анонимно';
-  }
+  });
 }
 
 function updateResults(question) {
@@ -1690,10 +1671,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Show welcome message
   setTimeout(() => {
-    if (Object.keys(userVotes).length === 0 && !localStorage.getItem('feedbackSubmissions')) {
-      showNotification('Добро пожаловать! Поделитесь своим мнением в опросах ниже 👇', 'info');
-    }
-  }, 2000);
+    console.log('Page fully loaded, functions ready');
+    console.log('userVotes:', userVotes);
+    console.log('votingData:', votingData);
+  }, 1000);
 });
 
 function scrollToVoting() {
