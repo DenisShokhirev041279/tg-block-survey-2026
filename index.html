@@ -1497,15 +1497,21 @@ function voteClick(question, option, btn) {
   const voteData = {
     question: question,
     option: option,
-    timestamp: new Date().toISOString(),
     source: 'TG Block Survey 2026'
   };
   
   fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
     method: 'POST',
     mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(voteData)
-  }).catch(e => console.log('Vote sent:', e));
+  }).then(() => {
+    console.log('Голос отправлен в таблицу:', question, option);
+  }).catch(e => {
+    console.log('Ошибка отправки голоса:', e);
+  });
   
   // Show success message
   alert('✅ Голос засчитан и отправлен! Спасибо за участие');
@@ -1598,7 +1604,14 @@ function sendFeedback() {
   fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
     method: 'POST',
     mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(data)
+  }).then(() => {
+    console.log('Обратная связь отправлена в таблицу:', text.substring(0, 50) + '...');
+  }).catch(e => {
+    console.log('Ошибка отправки обратной связи:', e);
   });
   
   // Show success immediately (no-cors can't detect response)
