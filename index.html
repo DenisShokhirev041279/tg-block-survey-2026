@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026: Русскоязычный интернет под угрозой | Денис Шохирев</title>
+<meta name="description" content="Исследование спроса на VPN и альтернативные решения для русскоязычных экспертов в связи с блокировками Telegram в 2026 году">
+<meta property="og:title" content="2026: Русскоязычный интернет под угрозой">
+<meta property="og:description" content="Открытый разговор о будущем русскоязычного интернета и поиске решений">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Geologica:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E8281A;
+    --dark: #0A0A0A;
+    --mid: #141414;
+    --border: #1f1f1f;
+    --text: #D4CFC9;
+    --muted: #6B6560;
+    --accent: #F5C842;
+    --gradient: linear-gradient(135deg, #E8281A 0%, #F5C842 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Geologica', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: default;
+    line-height: 1.6;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* HEADER ALERT BAR */
+  .alert-bar {
+    background: var(--red);
+    text-align: center;
+    padding: 12px 20px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: pulse-bg 2s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .alert-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shine 3s infinite;
+  }
+
+  @keyframes pulse-bg {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+
+  @keyframes shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 40px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .year-tag {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .year-tag::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--red);
+  }
+
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(38px, 7vw, 88px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span.red { 
+    color: var(--red);
+    position: relative;
+  }
+  
+  .hero h1 span.accent { color: var(--accent); }
+
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 19px);
+    color: var(--muted);
+    margin-top: 28px;
+    line-height: 1.6;
+    max-width: 580px;
+    font-weight: 400;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .hero-sub em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* EXPERT BADGE */
+  .expert-badge {
+    margin-top: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: rgba(245, 200, 66, 0.1);
+    border: 1px solid rgba(245, 200, 66, 0.3);
+    border-radius: 4px;
+  }
+
+  .expert-badge::before {
+    content: '⚡';
+    font-size: 16px;
+  }
+
+  .expert-badge span {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* COUNTDOWN TICKER */
+  .ticker-wrap {
+    margin-top: 52px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    padding: 20px 28px;
+    background: var(--mid);
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+    animation: fadeUp 0.8s ease 0.3s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ticker-wrap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(232, 40, 26, 0.1), transparent);
+    animation: slide 4s infinite;
+  }
+
+  @keyframes slide {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ticker-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+
+  .ticker-text {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  /* SECTION */
+  section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 40px;
+  }
+
+  /* MESSAGE BLOCK */
+  .message-block {
+    padding: 72px 0;
+    animation: fadeUp 1s ease 0.1s both;
+  }
+
+  .message-block p {
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .message-block p em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .message-block p strong {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* AUDIENCE TAGS */
+  .audience {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 32px 0;
+  }
+
+  .tag {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient);
+    transition: left 0.3s ease;
+    z-index: -1;
+  }
+
+  .tag:hover::before {
+    left: 0;
+  }
+
+  .tag:hover {
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-2px);
+  }
+
+  /* QUESTIONS GRID */
+  .questions {
+    padding: 72px 0;
+  }
+
+  .section-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .q-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .q-grid { grid-template-columns: 1fr; }
+  }
+
+  .q-item {
+    background: var(--mid);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .q-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(232, 40, 26, 0.1), rgba(245, 200, 66, 0.1));
+    transition: left 0.3s ease;
+  }
+
+  .q-item:hover::before {
+    left: 0;
+  }
+
+  .q-item:hover { 
+    background: #1a1a1a;
+    transform: translateY(-4px);
+  }
+
+  .q-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--border);
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    line-height: 1;
+    transition: all 0.3s ease;
+  }
+
+  .q-item:hover .q-num { 
+    color: var(--accent);
+    transform: scale(1.1);
+  }
+
+  .q-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+    font-weight: 400;
+  }
+
+  /* CTA */
+  .cta-block {
+    padding: 80px 0 100px;
+    text-align: center;
+  }
+
+  .cta-block h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .cta-block p {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 44px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-primary:hover::after { opacity: 1; }
+  .btn-primary:hover { 
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(232, 40, 26, 0.3);
+  }
+
+  .btn-secondary {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient);
+    transition: left 0.3s ease;
+    z-index: -1;
+  }
+
+  .btn-secondary:hover::before {
+    left: 0;
+  }
+
+  .btn-secondary:hover {
+    border-color: transparent;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(245, 200, 66, 0.2);
+  }
+
+  /* SOCIAL LINKS */
+  .social-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .social-link {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+  }
+
+  .social-link:hover { 
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .social-link::before {
+    content: '→';
+    font-size: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  .social-link:hover::before {
+    transform: translateX(4px);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  footer span {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ENTRY ANIMATIONS */
+  .hero h1 { animation: fadeUp 0.7s ease 0s both; }
+  .hero-sub { animation: fadeUp 0.7s ease 0.15s both; }
+  .year-tag { animation: fadeUp 0.7s ease 0s both; }
+  .expert-badge { animation: fadeUp 0.7s ease 0.3s both; }
+
+  /* BLINK */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .blink { animation: blink 1.2s step-end infinite; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .hero { padding: 60px 20px 40px; }
+    section { padding: 0 20px; }
+    .divider { margin: 0 20px; }
+    footer { padding: 24px 20px; }
+    .ticker-wrap { flex-direction: column; gap: 8px; text-align: center; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+    .social-row { gap: 12px; }
+  }
+
+  /* SMOOTH SCROLL */
+  html { scroll-behavior: smooth; }
+
+  /* SELECTION */
+  ::selection {
+    background: var(--accent);
+    color: var(--dark);
+  }
+</style>
+</head>
+<body>
+
+<div class="alert-bar">
+  ⚠ &nbsp; АПРЕЛЬ 2026 — РИСК ЭСКАЛАЦИИ БЛОКИРОВОК &nbsp; ⚠
+</div>
+
+<div class="hero">
+  <div class="year-tag">Открытый разговор · 2026</div>
+  <h1>
+    Русскоязычный<br>
+    интернет<br>
+    <span class="red">под давлением<span class="blink">_</span></span>
+  </h1>
+  <p class="hero-sub">
+    Замедление Telegram уже реальность.<br>
+    <strong>Дальше — хуже.</strong> Мне нужно понять, как вы работаете сейчас —
+    чтобы вместе найти <em>рабочие решения</em>.
+  </p>
+  
+  <div class="expert-badge">
+    <span>AI Systems Architect · Industrial Automation Expert</span>
+  </div>
+  
+  <div class="ticker-wrap">
+    <span class="ticker-label">Моя аудитория</span>
+    <span class="ticker-text">AI · вайбкодинг · контент · эксперты · эмигранты · предприниматели в РФ</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<section>
+  <div class="message-block">
+    <p>Братья, <em>2026</em> — год испытаний для нас всех. Я не буду делать вид, что ничего не происходит.</p>
+    <p>По инсайдам — <strong>апрель критичный</strong>. Для тех, у кого аудитория, боты, продажи или коммьюнити живут в Telegram — это прямой удар по бизнесу.</p>
+    <p>Я думаю над <em>конкретными вариантами</em>: от обхода без гемора до перевода продуктов в Европу. Но сначала мне нужно услышать вас — что реально болит прямо сейчас.</p>
+    <div class="audience">
+      <span class="tag">AI-эксперты</span>
+      <span class="tag">Вайбкодеры</span>
+      <span class="tag">Контент-мейкеры</span>
+      <span class="tag">Продукты</span>
+      <span class="tag">Эмигранты</span>
+      <span class="tag">Фаундеры из РФ</span>
+      <span class="tag">Промышленная автоматизация</span>
+      <span class="tag">AI Systems</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="questions">
+    <div class="section-label">4 честных вопроса</div>
+    <div class="q-grid">
+      <div class="q-item">
+        <div class="q-num">1</div>
+        <p class="q-text">Как сейчас работаете / продвигаетесь? Всё тормозит?</p>
+      </div>
+      <div class="q-item">
+        <div class="q-num">2</div>
+        <p class="q-text">Уже мигрируете куда-то (Signal / Discord / Element)? Или держитесь за TG?</p>
+      </div>
+      <div class="q-item">
+        <div class="q-num">3</div>
+        <p class="q-text">Что для вас критично: боты / уведомления / продажи / коммьюнити?</p>
+      </div>
+      <div class="q-item">
+        <div class="q-num">4</div>
+        <p class="q-text">Готовы платить за стабильные решения — VPN, альтернативы платформ, EU-инструменты?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="cta-block">
+    <h2>Ваш фидбек =<br><span style="color:var(--accent)">что запустим первым</span></h2>
+    <p>Без политики, только бизнес и техника. Держимся вместе — и находим выход.</p>
+    <div class="cta-buttons">
+      <a href="https://t.me/ger_dennis_ai" class="btn-primary" target="_blank">
+        Написать в Telegram
+      </a>
+      <a href="https://t.me/ger_denis_sh" class="btn-secondary" target="_blank">
+        Личный аккаунт
+      </a>
+    </div>
+
+    <div class="social-row">
+      <a href="https://t.me/ger_dennis_ai" class="social-link" target="_blank">Telegram канал</a>
+      <a href="https://t.me/ger_denis_sh" class="social-link" target="_blank">Личный TG</a>
+      <a href="https://www.linkedin.com/in/denis-shokhirev-38b866392" class="social-link" target="_blank">LinkedIn</a>
+      <a href="https://www.youtube.com/@ger_dennis_ai" class="social-link" target="_blank">YouTube</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Денис Шохирев · AI Systems Architect · Erlangen, DE</span>
+  <span>Только бизнес и тех — без политики</span>
+</footer>
+
+<script>
+// Плавные анимации при скролле
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+// Наблюдаем за элементами
+document.querySelectorAll('.q-item, .tag, .social-link').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'all 0.6s ease';
+  observer.observe(el);
+});
+
+// Интерактивность для вопросов
+document.querySelectorAll('.q-item').forEach(item => {
+  item.addEventListener('click', () => {
+    // Можно добавить аналитику клика
+    console.log('Question clicked:', item.querySelector('.q-text').textContent);
+  });
+});
+
+// Аналитика кликов по кнопкам
+document.querySelectorAll('.btn-primary, .btn-secondary, .social-link').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const href = e.target.getAttribute('href');
+    console.log('Link clicked:', href);
+    // Здесь можно добавить отправку в Google Analytics или другую систему
+  });
+});
+</script>
+
+</body>
+</html>
