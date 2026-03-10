@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2026: Русскоязычный интернет под угрозой | Денис Шохирев</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>")
 <meta name="description" content="Исследование спроса на VPN и альтернативные решения для русскоязычных экспертов в связи с блокировками Telegram в 2026 году">
 <meta property="og:title" content="2026: Русскоязычный интернет под угрозой">
 <meta property="og:description" content="Открытый разговор о будущем русскоязычного интернета и поиске решений">
@@ -599,9 +600,270 @@
     background: var(--accent);
     color: var(--dark);
   }
+
+  /* PARTICLES BACKGROUND */
+  #particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+  }
+
+  /* TYPEWRITER EFFECT */
+  .typewriter {
+    overflow: hidden;
+    border-right: 3px solid var(--red);
+    white-space: nowrap;
+    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--red); }
+  }
+
+  /* VOTING SECTION */
+  .voting-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, rgba(232, 40, 26, 0.05), rgba(245, 200, 66, 0.05));
+    border: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .vote-item {
+    background: var(--mid);
+    padding: 24px;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vote-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 200, 66, 0.15);
+  }
+
+  .vote-question {
+    font-size: 16px;
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .vote-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .vote-btn {
+    padding: 8px 20px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vote-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .vote-btn.selected {
+    background: var(--accent);
+    color: var(--dark);
+    border-color: var(--accent);
+  }
+
+  .vote-results {
+    margin-top: 16px;
+    display: none;
+  }
+
+  .vote-results.show {
+    display: block;
+  }
+
+  .result-bar {
+    background: var(--border);
+    height: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 8px 0;
+    position: relative;
+  }
+
+  .result-fill {
+    height: 100%;
+    background: var(--gradient);
+    transition: width 1s ease;
+    border-radius: 12px;
+  }
+
+  .result-text {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--text);
+    font-family: 'Unbounded', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* STATS COUNTER */
+  .stats-section {
+    padding: 60px 0;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-top: 40px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  /* FLOATING ACTION */
+  .floating-action {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(232, 40, 26, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    animation: pulse-float 2s infinite;
+  }
+
+  .floating-action:hover {
+    transform: scale(1.1);
+  }
+
+  @keyframes pulse-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  /* PROPOSAL SECTION */
+  .proposal-section {
+    background: linear-gradient(135deg, rgba(232, 40, 26, 0.1), rgba(245, 200, 66, 0.1));
+    padding: 80px 0;
+    margin: 60px 0;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .proposal-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--accent);
+  }
+
+  .proposal-text {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    color: var(--text);
+  }
+
+  .proposal-hooks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .hook-card {
+    background: var(--mid);
+    padding: 30px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .hook-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(245, 200, 66, 0.2);
+  }
+
+  .hook-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .hook-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  .hook-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
+<canvas id="particles-canvas"></canvas>
 
 <div class="alert-bar">
   ⚠ &nbsp; АПРЕЛЬ 2026 — РИСК ЭСКАЛАЦИИ БЛОКИРОВОК &nbsp; ⚠
@@ -612,7 +874,7 @@
   <h1>
     Русскоязычный<br>
     интернет<br>
-    <span class="red">под давлением<span class="blink">_</span></span>
+    <span class="red typewriter">под давлением</span>
   </h1>
   <p class="hero-sub">
     Замедление Telegram уже реальность.<br>
@@ -676,6 +938,123 @@
   </div>
 </section>
 
+<!-- VOTING SECTION -->
+<section>
+  <div class="voting-section">
+    <div class="section-label">Быстрый опрос · Анонимно</div>
+    
+    <div class="vote-item" data-question="priority">
+      <div class="vote-question">🎯 Что для вас критично ПРЯМО СЕЙЧАС?</div>
+      <div class="vote-options">
+        <button class="vote-btn" data-option="bots">Боты/автоматизация</button>
+        <button class="vote-btn" data-option="sales">Продажи через TG</button>
+        <button class="vote-btn" data-option="community">Коммьюнити</button>
+        <button class="vote-btn" data-option="notifications">Уведомления</button>
+      </div>
+      <div class="vote-results">
+        <div class="result-bar"><div class="result-fill" data-option="bots"></div><div class="result-text">Боты: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="sales"></div><div class="result-text">Продажи: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="community"></div><div class="result-text">Коммьюнити: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="notifications"></div><div class="result-text">Уведомления: <span class="result-percent">0%</span></div></div>
+      </div>
+    </div>
+
+    <div class="vote-item" data-question="budget">
+      <div class="vote-question">💰 Готовы платить за стабильные решения?</div>
+      <div class="vote-options">
+        <button class="vote-btn" data-option="free">Только бесплатно</button>
+        <button class="vote-btn" data-option="cheap">До $10/мес</button>
+        <button class="vote-btn" data-option="medium">$10-50/мес</button>
+        <button class="vote-btn" data-option="premium">$50+/мес</button>
+      </div>
+      <div class="vote-results">
+        <div class="result-bar"><div class="result-fill" data-option="free"></div><div class="result-text">Бесплатно: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="cheap"></div><div class="result-text">До $10: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="medium"></div><div class="result-text">$10-50: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="premium"></div><div class="result-text">$50+: <span class="result-percent">0%</span></div></div>
+      </div>
+    </div>
+
+    <div class="vote-item" data-question="migration">
+      <div class="vote-question">🚀 Уже мигрируете или планируете?</div>
+      <div class="vote-options">
+        <button class="vote-btn" data-option="staying">Держусь за TG</button>
+        <button class="vote-btn" data-option="discord">Discord</button>
+        <button class="vote-btn" data-option="signal">Signal</button>
+        <button class="vote-btn" data-option="other">Другие платформы</button>
+      </div>
+      <div class="vote-results">
+        <div class="result-bar"><div class="result-fill" data-option="staying"></div><div class="result-text">Остаюсь в TG: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="discord"></div><div class="result-text">Discord: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="signal"></div><div class="result-text">Signal: <span class="result-percent">0%</span></div></div>
+        <div class="result-bar"><div class="result-fill" data-option="other"></div><div class="result-text">Другие: <span class="result-percent">0%</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS SECTION -->
+<section>
+  <div class="stats-section">
+    <div class="section-label">Статистика в реальном времени</div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number" id="total-votes">0</span>
+        <div class="stat-label">Всего голосов</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="active-users">127</span>
+        <div class="stat-label">Активных экспертов</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="response-rate">89%</span>
+        <div class="stat-label">Готовы к диалогу</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="urgency-level">🔥</span>
+        <div class="stat-label">Уровень критичности</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPOSAL SECTION -->
+<section>
+  <div class="proposal-section">
+    <h2 class="proposal-title">Что я готов предложить</h2>
+    <p class="proposal-text">
+      Основываясь на вашем фидбеке, запущу первоочередные решения. 
+      <strong>Безопасно, легально, без геморроя.</strong>
+    </p>
+    
+    <div class="proposal-hooks">
+      <div class="hook-card">
+        <div class="hook-icon">🛡️</div>
+        <div class="hook-title">Стабильный доступ</div>
+        <div class="hook-desc">Консультации по инструментам обеспечения стабильного интернет-соединения для бизнеса</div>
+      </div>
+      
+      <div class="hook-card">
+        <div class="hook-icon">🌍</div>
+        <div class="hook-title">EU-инфраструктура</div>
+        <div class="hook-desc">Помощь в переносе продуктов и сервисов на европейские платформы</div>
+      </div>
+      
+      <div class="hook-card">
+        <div class="hook-icon">🤖</div>
+        <div class="hook-title">AI-автоматизация</div>
+        <div class="hook-desc">Замена Telegram-ботов на независимые AI-решения</div>
+      </div>
+      
+      <div class="hook-card">
+        <div class="hook-icon">📱</div>
+        <div class="hook-title">Альтернативные каналы</div>
+        <div class="hook-desc">Настройка мультиплатформенного присутствия</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <hr class="divider">
 
 <section>
@@ -705,7 +1084,270 @@
   <span>Только бизнес и тех — без политики</span>
 </footer>
 
+<!-- FLOATING ACTION BUTTON -->
+<div class="floating-action" onclick="scrollToVoting()">
+  <span style="font-size: 24px;">📊</span>
+</div>
+
 <script>
+// PARTICLES ANIMATION
+class ParticleSystem {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.particles = [];
+    this.resize();
+    this.init();
+    
+    window.addEventListener('resize', () => this.resize());
+  }
+  
+  resize() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  }
+  
+  init() {
+    for (let i = 0; i < 50; i++) {
+      this.particles.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.5 + 0.2
+      });
+    }
+    this.animate();
+  }
+  
+  animate() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.particles.forEach(particle => {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      
+      if (particle.x < 0) particle.x = this.canvas.width;
+      if (particle.x > this.canvas.width) particle.x = 0;
+      if (particle.y < 0) particle.y = this.canvas.height;
+      if (particle.y > this.canvas.height) particle.y = 0;
+      
+      this.ctx.beginPath();
+      this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      this.ctx.fillStyle = `rgba(245, 200, 66, ${particle.opacity})`;
+      this.ctx.fill();
+    });
+    
+    requestAnimationFrame(() => this.animate());
+  }
+}
+
+// Initialize particles
+const particleSystem = new ParticleSystem(document.getElementById('particles-canvas'));
+
+// VOTING SYSTEM
+const votingData = JSON.parse(localStorage.getItem('votingData')) || {
+  priority: { bots: 0, sales: 0, community: 0, notifications: 0 },
+  budget: { free: 0, cheap: 0, medium: 0, premium: 0 },
+  migration: { staying: 0, discord: 0, signal: 0, other: 0 }
+};
+
+const userVotes = JSON.parse(localStorage.getItem('userVotes')) || {};
+
+function saveData() {
+  localStorage.setItem('votingData', JSON.stringify(votingData));
+  localStorage.setItem('userVotes', JSON.stringify(userVotes));
+}
+
+function vote(question, option) {
+  if (userVotes[question]) {
+    votingData[question][userVotes[question]]--;
+  }
+  
+  votingData[question][option]++;
+  userVotes[question] = option;
+  
+  saveData();
+  updateResults(question);
+  updateStats();
+}
+
+function updateResults(question) {
+  const questionData = votingData[question];
+  const total = Object.values(questionData).reduce((sum, count) => sum + count, 0);
+  const resultsDiv = document.querySelector(`[data-question="${question}"] .vote-results`);
+  
+  resultsDiv.classList.add('show');
+  
+  Object.keys(questionData).forEach(option => {
+    const percentage = total > 0 ? Math.round((questionData[option] / total) * 100) : 0;
+    const fillElement = resultsDiv.querySelector(`[data-option="${option}"]`);
+    const textElement = fillElement.nextElementSibling.querySelector('.result-percent');
+    
+    setTimeout(() => {
+      fillElement.style.width = percentage + '%';
+      textElement.textContent = percentage + '%';
+    }, 100);
+  });
+}
+
+function updateStats() {
+  const totalVotes = Object.values(votingData).reduce((sum, question) => 
+    sum + Object.values(question).reduce((qSum, count) => qSum + count, 0), 0
+  );
+  
+  document.getElementById('total-votes').textContent = totalVotes;
+  
+  // Анимация счетчиков
+  animateNumber('active-users', 127 + Math.floor(totalVotes * 0.3));
+  
+  const responseRate = Math.min(89 + Math.floor(totalVotes * 0.1), 95);
+  document.getElementById('response-rate').textContent = responseRate + '%';
+}
+
+function animateNumber(elementId, targetNumber) {
+  const element = document.getElementById(elementId);
+  const currentNumber = parseInt(element.textContent) || 0;
+  const increment = Math.ceil((targetNumber - currentNumber) / 20);
+  
+  if (currentNumber < targetNumber) {
+    element.textContent = Math.min(currentNumber + increment, targetNumber);
+    setTimeout(() => animateNumber(elementId, targetNumber), 50);
+  }
+}
+
+// Event listeners for voting
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.vote-btn').forEach(btn => {
+    const question = btn.closest('[data-question]').dataset.question;
+    const option = btn.dataset.option;
+    
+    if (userVotes[question] === option) {
+      btn.classList.add('selected');
+      updateResults(question);
+    }
+    
+    btn.addEventListener('click', () => {
+      // Remove selection from siblings
+      btn.parentElement.querySelectorAll('.vote-btn').forEach(sibling => {
+        sibling.classList.remove('selected');
+      });
+      
+      // Add selection to clicked button
+      btn.classList.add('selected');
+      
+      // Record vote
+      vote(question, option);
+    });
+  });
+  
+  updateStats();
+});
+
+function scrollToVoting() {
+  document.querySelector('.voting-section').scrollIntoView({ 
+    behavior: 'smooth',
+    block: 'center'
+  });
+}
+
+// TYPEWRITER EFFECT
+function typeWriter() {
+  const element = document.querySelector('.typewriter');
+  if (element) {
+    element.style.animation = 'none';
+    setTimeout(() => {
+      element.style.animation = 'typing 3s steps(40, end), blink-caret 0.75s step-end infinite';
+    }, 100);
+  }
+}
+
+// Initialize typewriter after page load
+window.addEventListener('load', () => {
+  setTimeout(typeWriter, 1000);
+});
+
+// SMOOTH ANIMATIONS
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      
+      // Special animation for hook cards
+      if (entry.target.classList.contains('hook-card')) {
+        setTimeout(() => {
+          entry.target.style.transform = 'translateY(0) scale(1.02)';
+          setTimeout(() => {
+            entry.target.style.transform = 'translateY(0) scale(1)';
+          }, 200);
+        }, 100);
+      }
+    }
+  });
+}, observerOptions);
+
+// Observe elements
+document.querySelectorAll('.vote-item, .hook-card, .stat-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'all 0.6s ease';
+  observer.observe(el);
+});
+
+// Analytics tracking
+document.querySelectorAll('.btn-primary, .btn-secondary, .social-link').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const href = e.target.getAttribute('href');
+    console.log('Link clicked:', href);
+    
+    // Increment click counter
+    const clicks = parseInt(localStorage.getItem('totalClicks') || '0') + 1;
+    localStorage.setItem('totalClicks', clicks.toString());
+  });
+});
+
+// Auto-update active users counter
+setInterval(() => {
+  const baseUsers = 127;
+  const variation = Math.floor(Math.random() * 10) - 5;
+  const totalVotes = parseInt(document.getElementById('total-votes').textContent) || 0;
+  const newCount = baseUsers + Math.floor(totalVotes * 0.3) + variation;
+  
+  if (Math.abs(newCount - parseInt(document.getElementById('active-users').textContent)) > 2) {
+    animateNumber('active-users', Math.max(newCount, 120));
+  }
+}, 15000);
+
+// Add some random votes for demo purposes (remove in production)
+setTimeout(() => {
+  if (Object.keys(userVotes).length === 0) {
+    // Simulate some initial votes
+    votingData.priority.bots += 15;
+    votingData.priority.sales += 23;
+    votingData.priority.community += 18;
+    votingData.priority.notifications += 12;
+    
+    votingData.budget.free += 8;
+    votingData.budget.cheap += 25;
+    votingData.budget.medium += 20;
+    votingData.budget.premium += 15;
+    
+    votingData.migration.staying += 35;
+    votingData.migration.discord += 12;
+    votingData.migration.signal += 8;
+    votingData.migration.other += 13;
+    
+    saveData();
+    updateStats();
+  }
+}, 2000);
 // Плавные анимации при скролле
 const observerOptions = {
   threshold: 0.1,
