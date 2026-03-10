@@ -1502,7 +1502,7 @@ function voteClick(question, option, btn) {
       console.log('Other buttons disabled');
     }
     
-    // Send to Google Sheets
+    // Send to Google Sheets - FIXED VERSION
     const voteData = {
       question: question,
       option: option,
@@ -1512,18 +1512,25 @@ function voteClick(question, option, btn) {
     
     console.log('Sending vote data:', voteData);
     
-    fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(voteData)
-    }).then(() => {
-      console.log('✅ Vote sent to Google Sheets successfully');
-    }).catch(error => {
-      console.log('⚠️ Fetch error (но данные могли отправиться):', error);
+    // Use simple form submission instead of fetch to avoid CORS
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
+    form.style.display = 'none';
+    
+    Object.keys(voteData).forEach(key => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = voteData[key];
+      form.appendChild(input);
     });
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    
+    console.log('✅ Vote sent via form submission');
     
     // Show success message
     alert('✅ Голос засчитан! Спасибо за участие.\n\nВопрос: ' + question + '\nОтвет: ' + option);
@@ -1639,19 +1646,37 @@ function sendFeedback() {
     
     console.log('Sending feedback data:', feedbackData);
     
-    // Send to Google Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(feedbackData)
-    }).then(() => {
-      console.log('✅ Feedback sent successfully');
-    }).catch(error => {
-      console.log('⚠️ Fetch error (но данные могли отправиться):', error);
+    // Send to Google Apps Script - FIXED VERSION  
+    const feedbackData = {
+      q1: feedbackText,
+      user_id: "Anonymous",
+      source: window.location.href,
+      feedback: "TG Block 2026",
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Sending feedback data:', feedbackData);
+    
+    // Use form submission instead of fetch to avoid CORS
+    const form = document.createElement('form');
+    form.method = 'POST'; 
+    form.action = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
+    form.target = '_blank'; // Open in new tab to avoid navigation
+    form.style.display = 'none';
+    
+    Object.keys(feedbackData).forEach(key => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = feedbackData[key];
+      form.appendChild(input);
     });
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    
+    console.log('✅ Feedback sent via form submission');
     
     // Show success after 1 second
     setTimeout(() => {
