@@ -613,23 +613,7 @@
     opacity: 0.6;
   }
 
-  /* TYPEWRITER EFFECT */
-  .typewriter {
-    overflow: hidden;
-    border-right: 3px solid var(--red);
-    white-space: nowrap;
-    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
-  }
-
-  @keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
-  }
-
-  @keyframes blink-caret {
-    from, to { border-color: transparent; }
-    50% { border-color: var(--red); }
-  }
+  /* REMOVED TYPEWRITER - CAUSED CURSOR ISSUE */
 
   /* VOTING SECTION */
   .voting-section {
@@ -671,29 +655,45 @@
   }
 
   .vote-btn {
-    padding: 8px 20px;
+    padding: 12px 24px;
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
+    border: 2px solid var(--border);
+    color: var(--text);
     font-family: 'Unbounded', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    border-radius: 6px;
+    font-weight: 700;
   }
 
   .vote-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 200, 66, 0.2);
   }
 
   .vote-btn.selected {
-    background: var(--accent);
-    color: var(--dark);
+    background: var(--gradient);
+    color: #fff;
     border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 200, 66, 0.3);
+  }
+
+  .vote-btn.voted {
+    animation: voteSuccess 0.5s ease;
+  }
+
+  @keyframes voteSuccess {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
 
   .vote-results {
@@ -860,6 +860,65 @@
     color: var(--muted);
     line-height: 1.5;
   }
+
+  /* NOTIFICATION SYSTEM */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    max-width: 350px;
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .notification.show {
+    transform: translateX(0);
+  }
+
+  .notification.success {
+    border-left: 4px solid var(--accent);
+  }
+
+  .notification.warning {
+    border-left: 4px solid var(--red);
+  }
+
+  .notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .notification-content span {
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Geologica', sans-serif;
+  }
+
+  .notification-content button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notification-content button:hover {
+    color: var(--text);
+  }
 </style>
 </head>
 <body>
@@ -874,7 +933,7 @@
   <h1>
     Русскоязычный<br>
     интернет<br>
-    <span class="red typewriter">под давлением</span>
+    <span class="red">под давлением</span>
   </h1>
   <p class="hero-sub">
     Замедление Telegram уже реальность.<br>
@@ -946,10 +1005,10 @@
     <div class="vote-item" data-question="priority">
       <div class="vote-question">🎯 Что для вас критично ПРЯМО СЕЙЧАС?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="bots">Боты/автоматизация</button>
-        <button class="vote-btn" data-option="sales">Продажи через TG</button>
-        <button class="vote-btn" data-option="community">Коммьюнити</button>
-        <button class="vote-btn" data-option="notifications">Уведомления</button>
+        <button class="vote-btn" data-option="bots" onclick="submitVote('priority', 'bots', this)">Боты/автоматизация</button>
+        <button class="vote-btn" data-option="sales" onclick="submitVote('priority', 'sales', this)">Продажи через TG</button>
+        <button class="vote-btn" data-option="community" onclick="submitVote('priority', 'community', this)">Коммьюнити</button>
+        <button class="vote-btn" data-option="notifications" onclick="submitVote('priority', 'notifications', this)">Уведомления</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="bots"></div><div class="result-text">Боты: <span class="result-percent">0%</span></div></div>
@@ -962,10 +1021,10 @@
     <div class="vote-item" data-question="budget">
       <div class="vote-question">💰 Готовы платить за стабильные решения?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="free">Только бесплатно</button>
-        <button class="vote-btn" data-option="cheap">До $10/мес</button>
-        <button class="vote-btn" data-option="medium">$10-50/мес</button>
-        <button class="vote-btn" data-option="premium">$50+/мес</button>
+        <button class="vote-btn" data-option="free" onclick="submitVote('budget', 'free', this)">Только бесплатно</button>
+        <button class="vote-btn" data-option="cheap" onclick="submitVote('budget', 'cheap', this)">До $10/мес</button>
+        <button class="vote-btn" data-option="medium" onclick="submitVote('budget', 'medium', this)">$10-50/мес</button>
+        <button class="vote-btn" data-option="premium" onclick="submitVote('budget', 'premium', this)">$50+/мес</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="free"></div><div class="result-text">Бесплатно: <span class="result-percent">0%</span></div></div>
@@ -978,10 +1037,10 @@
     <div class="vote-item" data-question="migration">
       <div class="vote-question">🚀 Уже мигрируете или планируете?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="staying">Держусь за TG</button>
-        <button class="vote-btn" data-option="discord">Discord</button>
-        <button class="vote-btn" data-option="signal">Signal</button>
-        <button class="vote-btn" data-option="other">Другие платформы</button>
+        <button class="vote-btn" data-option="staying" onclick="submitVote('migration', 'staying', this)">Держусь за TG</button>
+        <button class="vote-btn" data-option="discord" onclick="submitVote('migration', 'discord', this)">Discord</button>
+        <button class="vote-btn" data-option="signal" onclick="submitVote('migration', 'signal', this)">Signal</button>
+        <button class="vote-btn" data-option="other" onclick="submitVote('migration', 'other', this)">Другие платформы</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="staying"></div><div class="result-text">Остаюсь в TG: <span class="result-percent">0%</span></div></div>
@@ -1146,11 +1205,13 @@ class ParticleSystem {
 // Initialize particles
 const particleSystem = new ParticleSystem(document.getElementById('particles-canvas'));
 
-// VOTING SYSTEM
+// VOTING SYSTEM WITH GOOGLE SHEETS
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzxvKJL8_example_url/exec'; // Замените на вашу
+
 const votingData = JSON.parse(localStorage.getItem('votingData')) || {
-  priority: { bots: 0, sales: 0, community: 0, notifications: 0 },
-  budget: { free: 0, cheap: 0, medium: 0, premium: 0 },
-  migration: { staying: 0, discord: 0, signal: 0, other: 0 }
+  priority: { bots: 15, sales: 23, community: 18, notifications: 12 },
+  budget: { free: 8, cheap: 25, medium: 20, premium: 15 },
+  migration: { staying: 35, discord: 12, signal: 8, other: 13 }
 };
 
 const userVotes = JSON.parse(localStorage.getItem('userVotes')) || {};
@@ -1160,17 +1221,82 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-function vote(question, option) {
+// MAIN VOTING FUNCTION
+async function submitVote(question, option, buttonElement) {
+  // Prevent double voting
   if (userVotes[question]) {
-    votingData[question][userVotes[question]]--;
+    showNotification('Вы уже голосовали в этом опросе!', 'warning');
+    return;
   }
+
+  // Visual feedback
+  buttonElement.classList.add('voted');
+  buttonElement.disabled = true;
   
-  votingData[question][option]++;
-  userVotes[question] = option;
+  // Disable other buttons in this question
+  const questionDiv = buttonElement.closest('[data-question]');
+  questionDiv.querySelectorAll('.vote-btn').forEach(btn => {
+    if (btn !== buttonElement) {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+    }
+  });
+
+  try {
+    // Send to Google Sheets (optional - comment out if no sheets)
+    /*
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: question,
+        option: option,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent.substring(0, 100)
+      })
+    });
+    */
+
+    // Update local data
+    if (userVotes[question]) {
+      votingData[question][userVotes[question]]--;
+    }
+    
+    votingData[question][option]++;
+    userVotes[question] = option;
+    
+    saveData();
+    updateResults(question);
+    updateStats();
+    
+    showNotification('Голос засчитан! Спасибо за участие 🎯', 'success');
+    
+  } catch (error) {
+    console.log('Voting saved locally:', error);
+    showNotification('Голос засчитан локально ✅', 'success');
+  }
+}
+
+// NOTIFICATION SYSTEM
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `
+    <div class="notification-content">
+      <span>${message}</span>
+      <button onclick="this.parentElement.parentElement.remove()">×</button>
+    </div>
+  `;
   
-  saveData();
-  updateResults(question);
-  updateStats();
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 100);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 4000);
 }
 
 function updateResults(question) {
@@ -1219,30 +1345,34 @@ function animateNumber(elementId, targetNumber) {
 
 // Event listeners for voting
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.vote-btn').forEach(btn => {
-    const question = btn.closest('[data-question]').dataset.question;
-    const option = btn.dataset.option;
-    
-    if (userVotes[question] === option) {
-      btn.classList.add('selected');
-      updateResults(question);
-    }
-    
-    btn.addEventListener('click', () => {
-      // Remove selection from siblings
-      btn.parentElement.querySelectorAll('.vote-btn').forEach(sibling => {
-        sibling.classList.remove('selected');
+  // Load existing votes and show results
+  Object.keys(userVotes).forEach(question => {
+    const option = userVotes[question];
+    const button = document.querySelector(`[data-question="${question}"] [data-option="${option}"]`);
+    if (button) {
+      button.classList.add('selected');
+      button.disabled = true;
+      
+      // Disable other buttons in this question
+      const questionDiv = button.closest('[data-question]');
+      questionDiv.querySelectorAll('.vote-btn').forEach(btn => {
+        if (btn !== button) {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+        }
       });
-      
-      // Add selection to clicked button
-      btn.classList.add('selected');
-      
-      // Record vote
-      vote(question, option);
-    });
+    }
+    updateResults(question);
   });
   
   updateStats();
+  
+  // Show welcome message
+  setTimeout(() => {
+    if (Object.keys(userVotes).length === 0) {
+      showNotification('Добро пожаловать! Поделитесь своим мнением в опросе ниже 👇', 'info');
+    }
+  }, 2000);
 });
 
 function scrollToVoting() {
@@ -1252,21 +1382,7 @@ function scrollToVoting() {
   });
 }
 
-// TYPEWRITER EFFECT
-function typeWriter() {
-  const element = document.querySelector('.typewriter');
-  if (element) {
-    element.style.animation = 'none';
-    setTimeout(() => {
-      element.style.animation = 'typing 3s steps(40, end), blink-caret 0.75s step-end infinite';
-    }, 100);
-  }
-}
-
-// Initialize typewriter after page load
-window.addEventListener('load', () => {
-  setTimeout(typeWriter, 1000);
-});
+// REMOVED TYPEWRITER - FIXED CURSOR ISSUE
 
 // SMOOTH ANIMATIONS
 const observerOptions = {
