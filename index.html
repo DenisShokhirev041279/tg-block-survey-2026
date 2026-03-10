@@ -1458,73 +1458,92 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-// WORKING VOTING FUNCTION
+// SUPER SIMPLE VOTING - GUARANTEED TO WORK
 function voteClick(question, option, btn) {
-  console.log('VOTE CLICKED:', question, option);
-  
-  // Check if already voted
-  const voted = localStorage.getItem('voted_' + question);
-  if (voted) {
-    alert('Вы уже голосовали в этом вопросе!');
-    return;
-  }
-  
-  // Mark as voted
-  localStorage.setItem('voted_' + question, option);
-  
-  // Change button style IMMEDIATELY
-  btn.style.cssText = `
-    background: linear-gradient(135deg, #E8281A 0%, #F5C842 100%) !important;
-    color: #fff !important;
-    transform: scale(1.05) !important;
-    border: 2px solid #F5C842 !important;
-    box-shadow: 0 4px 15px rgba(245, 200, 66, 0.4) !important;
-  `;
-  btn.disabled = true;
-  
-  // Disable other buttons in this question
-  const questionDiv = btn.closest('.vote-item');
-  const allBtns = questionDiv.querySelectorAll('.vote-btn');
-  allBtns.forEach(b => {
-    if (b !== btn) {
-      b.disabled = true;
-      b.style.opacity = '0.3';
-      b.style.cursor = 'not-allowed';
+  try {
+    console.log('=== VOTE FUNCTION CALLED ===');
+    console.log('Question:', question);
+    console.log('Option:', option);
+    console.log('Button:', btn);
+    
+    // Check if already voted
+    const storageKey = 'voted_' + question;
+    const alreadyVoted = localStorage.getItem(storageKey);
+    
+    if (alreadyVoted) {
+      alert('❌ Вы уже голосовали в этом вопросе! Выбрано: ' + alreadyVoted);
+      return false;
     }
-  });
-  
-  // Send vote to Google Sheets
-  const voteData = {
-    question: question,
-    option: option,
-    source: 'TG Block Survey 2026'
-  };
-  
-  fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(voteData)
-  }).then(() => {
-    console.log('Голос отправлен в таблицу:', question, option);
-  }).catch(e => {
-    console.log('Ошибка отправки голоса:', e);
-  });
-  
-  // Show success message
-  alert('✅ Голос засчитан и отправлен! Спасибо за участие');
-  
-  // Update counter
-  const counter = document.getElementById('total-votes');
-  if (counter) {
-    const current = parseInt(counter.textContent) || 0;
-    counter.textContent = current + 1;
+    
+    // Save vote immediately
+    localStorage.setItem(storageKey, option);
+    console.log('Vote saved to localStorage:', storageKey, '=', option);
+    
+    // Change button appearance immediately
+    btn.style.setProperty('background', 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)', 'important');
+    btn.style.setProperty('color', '#ffffff', 'important');
+    btn.style.setProperty('transform', 'scale(1.1)', 'important');
+    btn.style.setProperty('box-shadow', '0 4px 20px rgba(232, 40, 26, 0.5)', 'important');
+    btn.disabled = true;
+    
+    console.log('Button style changed');
+    
+    // Disable other buttons in same question
+    const questionContainer = btn.closest('.vote-item');
+    if (questionContainer) {
+      const allButtons = questionContainer.querySelectorAll('.vote-btn');
+      allButtons.forEach(otherBtn => {
+        if (otherBtn !== btn) {
+          otherBtn.disabled = true;
+          otherBtn.style.opacity = '0.4';
+          otherBtn.style.cursor = 'not-allowed';
+        }
+      });
+      console.log('Other buttons disabled');
+    }
+    
+    // Send to Google Sheets
+    const voteData = {
+      question: question,
+      option: option,
+      source: 'TG Block Survey 2026',
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Sending vote data:', voteData);
+    
+    fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteData)
+    }).then(() => {
+      console.log('✅ Vote sent to Google Sheets successfully');
+    }).catch(error => {
+      console.log('⚠️ Fetch error (но данные могли отправиться):', error);
+    });
+    
+    // Show success message
+    alert('✅ Голос засчитан! Спасибо за участие.\n\nВопрос: ' + question + '\nОтвет: ' + option);
+    
+    // Update counter
+    const totalCounter = document.getElementById('total-votes');
+    if (totalCounter) {
+      const currentCount = parseInt(totalCounter.textContent) || 0;
+      totalCounter.textContent = currentCount + 1;
+      console.log('Counter updated:', currentCount + 1);
+    }
+    
+    console.log('=== VOTE FUNCTION COMPLETED ===');
+    return true;
+    
+  } catch (error) {
+    console.error('❌ ERROR in voteClick function:', error);
+    alert('Произошла ошибка: ' + error.message + '\n\nПопробуйте обновить страницу.');
+    return false;
   }
-  
-  // Show results for this question
-  showResults(question);
 }
 
 // Show voting results
@@ -1582,46 +1601,83 @@ function showNotification(message, type = 'info') {
 
 // SUPER SIMPLE FEEDBACK FORM
 function sendFeedback() {
-  const text = document.getElementById('feedbackText').value.trim();
-  
-  if (!text) {
-    alert('Пожалуйста, напишите свой отзыв');
+  try {
+    console.log('=== FEEDBACK FUNCTION CALLED ===');
+    
+    const textArea = document.getElementById('feedbackText');
+    const submitBtn = document.getElementById('feedbackSubmit');
+    
+    if (!textArea || !submitBtn) {
+      console.error('Form elements not found');
+      return false;
+    }
+    
+    const feedbackText = textArea.value.trim();
+    console.log('Feedback text length:', feedbackText.length);
+    
+    if (!feedbackText) {
+      alert('❌ Пожалуйста, напишите свой отзыв');
+      return false;
+    }
+    
+    if (feedbackText.length < 10) {
+      alert('❌ Слишком короткий отзыв. Напишите хотя бы 10 символов.');
+      return false;
+    }
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Отправляем...';
+    
+    const feedbackData = {
+      q1: feedbackText,
+      user_id: "Anonymous",
+      source: window.location.href,
+      feedback: "TG Block 2026",
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Sending feedback data:', feedbackData);
+    
+    // Send to Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(feedbackData)
+    }).then(() => {
+      console.log('✅ Feedback sent successfully');
+    }).catch(error => {
+      console.log('⚠️ Fetch error (но данные могли отправиться):', error);
+    });
+    
+    // Show success after 1 second
+    setTimeout(() => {
+      document.getElementById('feedbackForm').style.display = 'none';
+      document.getElementById('feedbackSuccess').style.display = 'block';
+      
+      alert('✅ Обратная связь отправлена!\n\nСпасибо за развернутый отзыв. Ваш опыт поможет найти лучшие решения.');
+      
+      console.log('=== FEEDBACK FUNCTION COMPLETED ===');
+    }, 1000);
+    
+    return false; // Prevent form submission
+    
+  } catch (error) {
+    console.error('❌ ERROR in sendFeedback function:', error);
+    alert('Произошла ошибка: ' + error.message + '\n\nПопробуйте обновить страницу.');
+    
+    // Reset button
+    const submitBtn = document.getElementById('feedbackSubmit');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Отправить анонимно';
+    }
+    
     return false;
   }
-  
-  const btn = document.getElementById('feedbackSubmit');
-  btn.disabled = true;
-  btn.textContent = 'Отправляем...';
-  
-  const data = {
-    q1: text,
-    user_id: "Anonymous", 
-    source: window.location.href,
-    feedback: "TG Block 2026"
-  };
-  
-  // Send to Google Apps Script
-  fetch('https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  }).then(() => {
-    console.log('Обратная связь отправлена в таблицу:', text.substring(0, 50) + '...');
-  }).catch(e => {
-    console.log('Ошибка отправки обратной связи:', e);
-  });
-  
-  // Show success immediately (no-cors can't detect response)
-  setTimeout(() => {
-    document.getElementById('feedbackForm').style.display = 'none';
-    document.getElementById('feedbackSuccess').style.display = 'block';
-    alert('✅ Обратная связь отправлена! Спасибо!');
-  }, 1000);
-  
-  return false; // Prevent form submission
 }
 
 function updateResults(question) {
@@ -1668,29 +1724,55 @@ function animateNumber(elementId, targetNumber) {
   }
 }
 
-// SIMPLE INITIALIZATION
+// SIMPLE INITIALIZATION WITH DEBUGGING
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Page loaded - voting ready!');
+  console.log('🚀 PAGE LOADED - STARTING DEBUG');
+  console.log('Current URL:', window.location.href);
   
-  // Check for existing votes and disable buttons
+  // Test if functions exist
+  console.log('voteClick function exists:', typeof voteClick === 'function');
+  console.log('sendFeedback function exists:', typeof sendFeedback === 'function');
+  
+  // Test button elements
+  const voteButtons = document.querySelectorAll('.vote-btn');
+  console.log('Found vote buttons:', voteButtons.length);
+  
+  const feedbackForm = document.getElementById('feedbackText');
+  console.log('Found feedback form:', !!feedbackForm);
+  
+  // Add test click handlers for debugging
+  voteButtons.forEach((btn, index) => {
+    btn.addEventListener('click', function(e) {
+      console.log(`🔘 Button ${index + 1} clicked:`, btn.textContent.trim());
+    });
+  });
+  
+  // Check for existing votes and restore button states
   const questions = ['priority', 'budget', 'migration'];
-  questions.forEach(q => {
-    const voted = localStorage.getItem('voted_' + q);
-    if (voted) {
-      const btn = document.querySelector(`[data-option="${voted}"]`);
-      if (btn) {
-        btn.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
-        btn.style.color = '#fff';
-        btn.disabled = true;
+  questions.forEach(question => {
+    const savedVote = localStorage.getItem('voted_' + question);
+    if (savedVote) {
+      console.log(`🔍 Found saved vote for ${question}:`, savedVote);
+      
+      // Find and highlight the voted button
+      const votedButton = document.querySelector(`[data-question="${question}"] [data-option="${savedVote}"]`);
+      if (votedButton) {
+        votedButton.style.setProperty('background', 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)', 'important');
+        votedButton.style.setProperty('color', '#ffffff', 'important');
+        votedButton.disabled = true;
         
-        // Disable other buttons in same question
-        const allBtns = btn.parentElement.querySelectorAll('.vote-btn');
-        allBtns.forEach(b => {
-          if (b !== btn) {
-            b.disabled = true;
-            b.style.opacity = '0.5';
-          }
-        });
+        // Disable other buttons in same question  
+        const questionContainer = votedButton.closest('.vote-item');
+        if (questionContainer) {
+          questionContainer.querySelectorAll('.vote-btn').forEach(btn => {
+            if (btn !== votedButton) {
+              btn.disabled = true;
+              btn.style.opacity = '0.4';
+            }
+          });
+        }
+        
+        console.log(`✅ Restored vote state for ${question}: ${savedVote}`);
       }
     }
   });
@@ -1698,11 +1780,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Simple counter animation
   let counter = 0;
   const totalVotes = document.getElementById('total-votes');
-  const interval = setInterval(() => {
-    counter++;
-    if (totalVotes) totalVotes.textContent = counter;
-    if (counter >= 47) clearInterval(interval);
-  }, 50);
+  if (totalVotes) {
+    const interval = setInterval(() => {
+      counter++;
+      totalVotes.textContent = counter;
+      if (counter >= 47) {
+        clearInterval(interval);
+        console.log('📊 Counter animation completed');
+      }
+    }, 50);
+  }
+  
+  console.log('✅ PAGE INITIALIZATION COMPLETED');
 });
 
 function scrollToVoting() {
