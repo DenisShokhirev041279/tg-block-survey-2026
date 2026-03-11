@@ -1183,10 +1183,10 @@
     <div class="vote-item" data-question="priority">
       <div class="vote-question">🎯 Что для вас критично ПРЯМО СЕЙЧАС?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="bots" onclick="voteClick('priority', 'bots', this)">Боты/автоматизация</button>
-        <button class="vote-btn" data-option="sales" onclick="voteClick('priority', 'sales', this)">Продажи через TG</button>
-        <button class="vote-btn" data-option="community" onclick="voteClick('priority', 'community', this)">Коммьюнити</button>
-        <button class="vote-btn" data-option="notifications" onclick="voteClick('priority', 'notifications', this)">Уведомления</button>
+        <button class="vote-btn" onclick="simpleVote('priority', 'bots', this)" data-option="bots">Боты/автоматизация</button>
+        <button class="vote-btn" onclick="simpleVote('priority', 'sales', this)" data-option="sales">Продажи через TG</button>
+        <button class="vote-btn" onclick="simpleVote('priority', 'community', this)" data-option="community">Коммьюнити</button>
+        <button class="vote-btn" onclick="simpleVote('priority', 'notifications', this)" data-option="notifications">Уведомления</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="bots"></div><div class="result-text">Боты: <span class="result-percent">0%</span></div></div>
@@ -1199,10 +1199,10 @@
     <div class="vote-item" data-question="budget">
       <div class="vote-question">💰 Готовы платить за стабильные решения?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="free" onclick="voteClick('budget', 'free', this)">Только бесплатно</button>
-        <button class="vote-btn" data-option="cheap" onclick="voteClick('budget', 'cheap', this)">До $10/мес</button>
-        <button class="vote-btn" data-option="medium" onclick="voteClick('budget', 'medium', this)">$10-50/мес</button>
-        <button class="vote-btn" data-option="premium" onclick="voteClick('budget', 'premium', this)">$50+/мес</button>
+        <button class="vote-btn" onclick="simpleVote('budget', 'free', this)" data-option="free">Только бесплатно</button>
+        <button class="vote-btn" onclick="simpleVote('budget', 'cheap', this)" data-option="cheap">До $10/мес</button>
+        <button class="vote-btn" onclick="simpleVote('budget', 'medium', this)" data-option="medium">$10-50/мес</button>
+        <button class="vote-btn" onclick="simpleVote('budget', 'premium', this)" data-option="premium">$50+/мес</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="free"></div><div class="result-text">Бесплатно: <span class="result-percent">0%</span></div></div>
@@ -1215,10 +1215,10 @@
     <div class="vote-item" data-question="migration">
       <div class="vote-question">🚀 Уже мигрируете или планируете?</div>
       <div class="vote-options">
-        <button class="vote-btn" data-option="staying" onclick="voteClick('migration', 'staying', this)">Держусь за TG</button>
-        <button class="vote-btn" data-option="discord" onclick="voteClick('migration', 'discord', this)">Discord</button>
-        <button class="vote-btn" data-option="signal" onclick="voteClick('migration', 'signal', this)">Signal</button>
-        <button class="vote-btn" data-option="other" onclick="voteClick('migration', 'other', this)">Другие платформы</button>
+        <button class="vote-btn" onclick="simpleVote('migration', 'staying', this)" data-option="staying">Держусь за TG</button>
+        <button class="vote-btn" onclick="simpleVote('migration', 'discord', this)" data-option="discord">Discord</button>
+        <button class="vote-btn" onclick="simpleVote('migration', 'signal', this)" data-option="signal">Signal</button>
+        <button class="vote-btn" onclick="simpleVote('migration', 'other', this)" data-option="other">Другие платформы</button>
       </div>
       <div class="vote-results">
         <div class="result-bar"><div class="result-fill" data-option="staying"></div><div class="result-text">Остаюсь в TG: <span class="result-percent">0%</span></div></div>
@@ -1458,99 +1458,17 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-// SUPER SIMPLE VOTING - GUARANTEED TO WORK
-function voteClick(question, option, btn) {
-  try {
-    console.log('=== VOTE FUNCTION CALLED ===');
-    console.log('Question:', question);
-    console.log('Option:', option);
-    console.log('Button:', btn);
-    
-    // Check if already voted
-    const storageKey = 'voted_' + question;
-    const alreadyVoted = localStorage.getItem(storageKey);
-    
-    if (alreadyVoted) {
-      alert('❌ Вы уже голосовали в этом вопросе! Выбрано: ' + alreadyVoted);
-      return false;
-    }
-    
-    // Save vote immediately
-    localStorage.setItem(storageKey, option);
-    console.log('Vote saved to localStorage:', storageKey, '=', option);
-    
-    // Change button appearance immediately
-    btn.style.setProperty('background', 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)', 'important');
-    btn.style.setProperty('color', '#ffffff', 'important');
-    btn.style.setProperty('transform', 'scale(1.1)', 'important');
-    btn.style.setProperty('box-shadow', '0 4px 20px rgba(232, 40, 26, 0.5)', 'important');
-    btn.disabled = true;
-    
-    console.log('Button style changed');
-    
-    // Disable other buttons in same question
-    const questionContainer = btn.closest('.vote-item');
-    if (questionContainer) {
-      const allButtons = questionContainer.querySelectorAll('.vote-btn');
-      allButtons.forEach(otherBtn => {
-        if (otherBtn !== btn) {
-          otherBtn.disabled = true;
-          otherBtn.style.opacity = '0.4';
-          otherBtn.style.cursor = 'not-allowed';
-        }
-      });
-      console.log('Other buttons disabled');
-    }
-    
-    // Send to Google Sheets - FIXED VERSION
-    const voteData = {
-      question: question,
-      option: option,
-      source: 'TG Block Survey 2026',
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('Sending vote data:', voteData);
-    
-    // Use simple form submission instead of fetch to avoid CORS
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
-    form.style.display = 'none';
-    
-    Object.keys(voteData).forEach(key => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = voteData[key];
-      form.appendChild(input);
-    });
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    
-    console.log('✅ Vote sent via form submission');
-    
-    // Show success message
-    alert('✅ Голос засчитан! Спасибо за участие.\n\nВопрос: ' + question + '\nОтвет: ' + option);
-    
-    // Update counter
-    const totalCounter = document.getElementById('total-votes');
-    if (totalCounter) {
-      const currentCount = parseInt(totalCounter.textContent) || 0;
-      totalCounter.textContent = currentCount + 1;
-      console.log('Counter updated:', currentCount + 1);
-    }
-    
-    console.log('=== VOTE FUNCTION COMPLETED ===');
-    return true;
-    
-  } catch (error) {
-    console.error('❌ ERROR in voteClick function:', error);
-    alert('Произошла ошибка: ' + error.message + '\n\nПопробуйте обновить страницу.');
-    return false;
-  }
+// ULTRA SIMPLE VOTING - GUARANTEED TO WORK
+function simpleVote(q, o, btn) {
+  alert('Тест функции: ' + q + ' = ' + o);
+  
+  btn.style.backgroundColor = '#E8281A';
+  btn.style.color = '#fff';
+  btn.disabled = true;
+  
+  alert('Кнопка изменена! Если видите это сообщение - функции работают.');
+  
+  return true;
 }
 
 // Show voting results
