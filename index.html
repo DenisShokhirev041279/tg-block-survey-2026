@@ -1565,7 +1565,7 @@ function sendFeedback() {
     console.log('Sending feedback data:', feedbackData);
     
     // Send to Google Apps Script - FIXED VERSION  
-    const feedbackData = {
+    feedbackData = {
       q1: feedbackText,
       user_id: "Anonymous",
       source: window.location.href,
