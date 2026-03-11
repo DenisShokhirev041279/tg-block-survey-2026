@@ -1516,9 +1516,32 @@ function simpleVote(q, o, btn) {
     updateStats();
   }
 
+  const questionLabelMap = {
+    priority: 'Что критично?',
+    budget: 'Готовы платить?',
+    migration: 'Мигрируете куда-то?'
+  };
+
+  const optionLabelMap = {
+    bots: 'Боты и автоматизация',
+    sales: 'Продажи через Telegram',
+    community: 'Коммьюнити',
+    notifications: 'Уведомления',
+    free: 'Только бесплатно',
+    cheap: 'До $10/мес',
+    medium: '$10-50/мес',
+    premium: '$50+/мес',
+    staying: 'Держусь за TG',
+    discord: 'Discord',
+    signal: 'Signal',
+    other: 'Другие платформы'
+  };
+
   submitToAppsScript({
-    question: q,
-    option: o,
+    question: questionLabelMap[q] || q,
+    option: optionLabelMap[o] || o,
+    question_code: q,
+    option_code: o,
     source: window.location.href,
     timestamp: new Date().toISOString()
   });
