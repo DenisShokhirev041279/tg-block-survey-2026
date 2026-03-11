@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест кнопок</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 50px; 
+            background: #0A0A0A; 
+            color: #fff;
+        }
+        .test-btn {
+            padding: 15px 30px;
+            margin: 10px;
+            background: #333;
+            color: #fff;
+            border: 2px solid #666;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .clicked {
+            background: #E8281A !important;
+            color: #fff !important;
+            border-color: #F5C842 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест кнопок голосования</h1>
+    
+    <h2>Простой тест:</h2>
+    <button class="test-btn" onclick="testFunction('Тест 1')">Кнопка 1</button>
+    <button class="test-btn" onclick="testFunction('Тест 2')">Кнопка 2</button>
+    
+    <h2>Тест голосования:</h2>
+    <button class="test-btn" onclick="simpleVote('priority', 'bots', this)">Боты/автоматизация</button>
+    <button class="test-btn" onclick="simpleVote('priority', 'sales', this)">Продажи через TG</button>
+    
+    <h2>Результаты:</h2>
+    <div id="results"></div>
+
+    <script>
+        function testFunction(name) {
+            alert('Функция работает: ' + name);
+            document.getElementById('results').innerHTML += '<p>✅ ' + name + ' - ' + new Date().toLocaleTimeString() + '</p>';
+        }
+
+        function simpleVote(q, o, btn) {
+            alert('Голосование: ' + q + ' = ' + o);
+            
+            btn.className = 'test-btn clicked';
+            btn.disabled = true;
+            btn.textContent += ' ✅';
+            
+            // Отправка в Google Sheets
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
+            form.target = '_blank';
+            
+            const inputs = {
+                question: q,
+                option: o,
+                source: 'Test Page',
+                timestamp: new Date().toISOString()
+            };
+            
+            Object.keys(inputs).forEach(key => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = inputs[key];
+                form.appendChild(input);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+            
+            document.getElementById('results').innerHTML += '<p>📊 Отправлено: ' + q + ' = ' + o + '</p>';
+        }
+        
+        // Тест при загрузке
+        window.onload = function() {
+            document.getElementById('results').innerHTML = '<p>🟢 JavaScript загружен: ' + new Date().toLocaleTimeString() + '</p>';
+        };
+    </script>
+</body>
+</html>
