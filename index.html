@@ -1456,32 +1456,35 @@ function saveData() {
 }
 
 function submitToAppsScript(payload) {
-  let frame = document.getElementById('apps-script-hidden-frame');
-  if (!frame) {
-    frame = document.createElement('iframe');
-    frame.id = 'apps-script-hidden-frame';
-    frame.name = 'apps-script-hidden-frame';
-    frame.style.display = 'none';
-    document.body.appendChild(frame);
-  }
-
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = APPS_SCRIPT_URL;
-  form.target = 'apps-script-hidden-frame';
-  form.style.display = 'none';
-
+  const params = new URLSearchParams();
   Object.keys(payload).forEach((key) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = String(payload[key]);
-    form.appendChild(input);
+    params.append(key, String(payload[key]));
   });
 
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
+  // Avoid iframe submission: Google blocks framed responses with X-Frame-Options.
+  try {
+    if (navigator.sendBeacon) {
+      const body = new Blob([params.toString()], {
+        type: 'application/x-www-form-urlencoded;charset=UTF-8'
+      });
+      const queued = navigator.sendBeacon(APPS_SCRIPT_URL, body);
+      if (queued) return;
+    }
+  } catch (beaconError) {
+    console.warn('sendBeacon failed, fallback to fetch:', beaconError);
+  }
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    keepalive: true,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+    body: params.toString()
+  }).catch((fetchError) => {
+    console.error('Apps Script submit failed:', fetchError);
+  });
 }
 
 function simpleVote(q, o, btn) {
