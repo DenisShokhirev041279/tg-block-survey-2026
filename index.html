@@ -1439,11 +1439,8 @@ class ParticleSystem {
 // Initialize particles
 const particleSystem = new ParticleSystem(document.getElementById('particles-canvas'));
 
-// VOTING SYSTEM WITH GOOGLE SHEETS
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzxvKJL8_example_url/exec'; // Замените на вашу
-
-// ANONYMOUS FEEDBACK FORM
-const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
+// APPS SCRIPT ENDPOINT FOR VOTES + FEEDBACK
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
 
 const votingData = JSON.parse(localStorage.getItem('votingData')) || {
   priority: { bots: 15, sales: 23, community: 18, notifications: 12 },
@@ -1458,17 +1455,73 @@ function saveData() {
   localStorage.setItem('userVotes', JSON.stringify(userVotes));
 }
 
-// ULTRA SIMPLE VOTING - GUARANTEED TO WORK
+function submitToAppsScript(payload) {
+  let frame = document.getElementById('apps-script-hidden-frame');
+  if (!frame) {
+    frame = document.createElement('iframe');
+    frame.id = 'apps-script-hidden-frame';
+    frame.name = 'apps-script-hidden-frame';
+    frame.style.display = 'none';
+    document.body.appendChild(frame);
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = APPS_SCRIPT_URL;
+  form.target = 'apps-script-hidden-frame';
+  form.style.display = 'none';
+
+  Object.keys(payload).forEach((key) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = String(payload[key]);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
 function simpleVote(q, o, btn) {
-  alert('Тест функции: ' + q + ' = ' + o);
-  
-  btn.style.backgroundColor = '#E8281A';
-  btn.style.color = '#fff';
-  btn.disabled = true;
-  
-  alert('Кнопка изменена! Если видите это сообщение - функции работают.');
-  
-  return true;
+  const votedKey = `voted_${q}`;
+  if (localStorage.getItem(votedKey)) {
+    showNotification('Голос по этому вопросу уже учтен', 'info');
+    return false;
+  }
+
+  localStorage.setItem(votedKey, o);
+
+  const questionContainer = btn.closest('.vote-item');
+  if (questionContainer) {
+    questionContainer.querySelectorAll('.vote-btn').forEach((button) => {
+      button.disabled = true;
+      if (button === btn) {
+        button.style.background = 'linear-gradient(135deg, #E8281A 0%, #F5C842 100%)';
+        button.style.color = '#fff';
+      } else {
+        button.style.opacity = '0.4';
+      }
+    });
+  }
+
+  if (votingData[q] && Object.prototype.hasOwnProperty.call(votingData[q], o)) {
+    votingData[q][o] += 1;
+    saveData();
+    updateResults(q);
+    updateStats();
+  }
+
+  submitToAppsScript({
+    question: q,
+    option: o,
+    source: window.location.href,
+    timestamp: new Date().toISOString()
+  });
+
+  showNotification('Голос принят. Спасибо за участие!', 'success');
+  return false;
 }
 
 // Show voting results
@@ -1564,35 +1617,7 @@ function sendFeedback() {
     
     console.log('Sending feedback data:', feedbackData);
     
-    // Send to Google Apps Script - FIXED VERSION  
-    feedbackData = {
-      q1: feedbackText,
-      user_id: "Anonymous",
-      source: window.location.href,
-      feedback: "TG Block 2026",
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('Sending feedback data:', feedbackData);
-    
-    // Use form submission instead of fetch to avoid CORS
-    const form = document.createElement('form');
-    form.method = 'POST'; 
-    form.action = 'https://script.google.com/macros/s/AKfycbzL6y42IXnBlcEbqbrz5Q56lhlbG5S3fiHdByYVkgLR58_vyGx-8EOaFYSGYNAJSL6Esg/exec';
-    form.target = '_blank'; // Open in new tab to avoid navigation
-    form.style.display = 'none';
-    
-    Object.keys(feedbackData).forEach(key => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = feedbackData[key];
-      form.appendChild(input);
-    });
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
+    submitToAppsScript(feedbackData);
     
     console.log('✅ Feedback sent via form submission');
     
@@ -1673,7 +1698,7 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('Current URL:', window.location.href);
   
   // Test if functions exist
-  console.log('voteClick function exists:', typeof voteClick === 'function');
+  console.log('simpleVote function exists:', typeof simpleVote === 'function');
   console.log('sendFeedback function exists:', typeof sendFeedback === 'function');
   
   // Test button elements
@@ -1826,45 +1851,6 @@ setTimeout(() => {
     updateStats();
   }
 }, 2000);
-// Плавные анимации при скролле
-const observerOptions = {
-  threshold: 0.1,
-  rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
-    }
-  });
-}, observerOptions);
-
-// Наблюдаем за элементами
-document.querySelectorAll('.q-item, .tag, .social-link').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(20px)';
-  el.style.transition = 'all 0.6s ease';
-  observer.observe(el);
-});
-
-// Интерактивность для вопросов
-document.querySelectorAll('.q-item').forEach(item => {
-  item.addEventListener('click', () => {
-    // Можно добавить аналитику клика
-    console.log('Question clicked:', item.querySelector('.q-text').textContent);
-  });
-});
-
-// Аналитика кликов по кнопкам
-document.querySelectorAll('.btn-primary, .btn-secondary, .social-link').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const href = e.target.getAttribute('href');
-    console.log('Link clicked:', href);
-    // Здесь можно добавить отправку в Google Analytics или другую систему
-  });
-});
 </script>
 
 </body>
